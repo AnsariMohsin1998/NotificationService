@@ -1,2 +1,4 @@
-package com.meesho.mohsin.NotificationService.util;public class Example {
+package com.meesho.mohsin.NotificationService.util;
+
+public class Example {
 }
