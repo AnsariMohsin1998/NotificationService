@@ -26,7 +26,12 @@ public class NotificationServiceApplication {
 		SpringApplication.run(NotificationServiceApplication.class, args);
 		System.out.println("Notification Service");
 
-		// DEMO CODE TO INSERT INTO MYSQL DATABASE BY USING HIBERNATE PROGRAMATICALLY
+	}
+
+}
+
+
+// DEMO CODE TO INSERT INTO MYSQL DATABASE BY USING HIBERNATE PROGRAMATICALLY
 
 
 //		SmsRequests smsRequest = new SmsRequests();
@@ -60,7 +65,3 @@ public class NotificationServiceApplication {
 //
 //		session.getTransaction().commit();
 //		session.close();
-
-	}
-
-}
