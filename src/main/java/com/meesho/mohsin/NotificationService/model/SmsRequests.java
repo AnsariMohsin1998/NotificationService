@@ -16,7 +16,7 @@ public class SmsRequests {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String phone_number;
@@ -35,6 +35,11 @@ public class SmsRequests {
     private Date created_at = new Date();
 
     private Date updated_at;
+
+    @PreUpdate
+    public void preUpdate(){
+        updated_at = new Date();
+    }
 
 
     // NO NEED FOR GETTERS AND SETTERS AND CONSTRUCTORS, AS DATA ANNOTATION WILL HANDLE IT.

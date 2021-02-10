@@ -1,30 +1,29 @@
 package com.meesho.mohsin.NotificationService.controller;
 
 
+import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.service.SmsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/v1/sms")
 public class SmsController {
 
     @Autowired
     private SmsService smsService;
 
-
-    @GetMapping(value = "/sms")
-    public List<SmsRequests> getAllSms(){
+    @GetMapping(value = "/get/bulk")
+    public List<SmsDto> getAllSms(){
         return smsService.findAllSmsRequests();
     }
 
-    @GetMapping(value = "/sms/{id}")
-    public SmsRequests findSmsById(@PathVariable(value = "id") int id){
+    @GetMapping(value = "/get/{id}")
+    public SmsDto findSmsById(@PathVariable(value = "id") int id){
         return smsService.findSmsRequestById(id);
     }
+
 }
