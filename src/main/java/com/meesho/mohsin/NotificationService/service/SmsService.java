@@ -89,8 +89,8 @@ public class SmsService {
         return smsDto;
     }
 
-    public SuccessMessageResponse addToBlackList(PhoneNumberRequestBody phoneNumberRequestBody){
-        for(String pno : phoneNumberRequestBody.getPhone_numbers()){
+    public SuccessMessageResponse addToBlackList(List<String> phoneNumbers){
+        for(String pno : phoneNumbers){
             BlackListedEntity blackListedEntity = new BlackListedEntity();
             blackListedEntity.setPhone_number(pno);
             //saves in db
@@ -114,6 +114,17 @@ public class SmsService {
     public BlackListResponse getBlackList(){
 
         Set<String> blackListResponseFromCache = blackListedRepository.findAll();
+
+        if(blackListResponseFromCache == null){
+            //fetch from database and put in cache
+            List<BlackListedEntity> blackListedEntities = blackListedRepository2.findAll();
+            List<String> phoneNumbers = new ArrayList<>();
+            for(BlackListedEntity blackListedEntity : blackListedEntities)
+                phoneNumbers.add(blackListedEntity.getPhone_number());
+
+            addToBlackList(phoneNumbers);
+        }
+        
         BlackListResponse blackListResponse = new BlackListResponse();
         blackListResponse.setData(blackListResponseFromCache);
         return blackListResponse;

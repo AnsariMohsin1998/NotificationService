@@ -61,7 +61,7 @@ public class SmsController {
     @PostMapping(value = "/blacklist")
     public ResponseEntity<MessageResponseBody> addToBlacklist(@RequestBody PhoneNumberRequestBody phoneNumberRequestBody) {
         try{
-            SuccessMessageResponse successMessageResponse = smsService.addToBlackList(phoneNumberRequestBody);
+            SuccessMessageResponse successMessageResponse = smsService.addToBlackList(phoneNumberRequestBody.getPhone_numbers());
             return new ResponseEntity(new MessageResponseBody(successMessageResponse),HttpStatus.OK);
         }
         catch (Exception exception){
