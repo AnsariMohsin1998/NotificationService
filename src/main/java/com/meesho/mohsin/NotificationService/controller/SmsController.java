@@ -67,4 +67,15 @@ public class SmsController {
         }
     }
 
+    @DeleteMapping("/blacklist/delete/{phone_number}")
+    public ResponseEntity<MessageResponseBody> delete(@PathVariable(value = "phone_number") String phone_number){
+        try {
+            SuccessMessageResponse successMessageResponse =  smsService.deleteFromBlackList(phone_number);
+            return new ResponseEntity(new MessageResponseBody(successMessageResponse),HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity(new MessageResponseBody(new ErrorMessageResponse("coudn't delete from blacklist")),HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

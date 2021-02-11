@@ -101,4 +101,12 @@ public class SmsService {
         return successMessageResponse;
     }
 
+    public SuccessMessageResponse deleteFromBlackList(String phone_number){
+        blackListedRepository.delete(phone_number);
+        blackListedRepository2.deleteById(phone_number);
+        SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
+        successMessageResponse.setMessage("successfully deleted "+phone_number+" from blacklist");
+        return successMessageResponse;
+    }
+
 }
