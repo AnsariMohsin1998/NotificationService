@@ -1,11 +1,13 @@
 package com.meesho.mohsin.NotificationService.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.BlackListedEntity;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
 import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
+import com.meesho.mohsin.NotificationService.model.response.BlackListResponse;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository2;
@@ -16,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class SmsService {
@@ -39,6 +38,9 @@ public class SmsService {
 
     @Autowired
     public BlackListedRepository2 blackListedRepository2;
+
+    @Autowired
+    ObjectMapper objectMapper;
 
     public SmsService(){
         System.out.println("SmsService is created !");
@@ -107,6 +109,15 @@ public class SmsService {
         SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
         successMessageResponse.setMessage("successfully deleted "+phone_number+" from blacklist");
         return successMessageResponse;
+    }
+
+    public BlackListResponse getBlackList(){
+
+        Set<String> blackListResponseFromCache = blackListedRepository.findAll();
+        BlackListResponse blackListResponse = new BlackListResponse();
+        blackListResponse.setData(blackListResponseFromCache);
+        return blackListResponse;
+
     }
 
 }

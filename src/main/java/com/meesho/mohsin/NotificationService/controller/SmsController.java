@@ -6,6 +6,7 @@ import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
 import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
+import com.meesho.mohsin.NotificationService.model.response.BlackListResponse;
 import com.meesho.mohsin.NotificationService.model.response.ErrorMessageResponse;
 import com.meesho.mohsin.NotificationService.model.response.MessageResponseBody;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/v1")
@@ -78,4 +80,10 @@ public class SmsController {
         }
     }
 
+    @GetMapping(value = "/blacklist")
+    public ResponseEntity<BlackListResponse> getBlacklist(){
+        BlackListResponse blackListResponse = smsService.getBlackList();
+
+        return new ResponseEntity(blackListResponse, HttpStatus.OK);
+    }
 }
