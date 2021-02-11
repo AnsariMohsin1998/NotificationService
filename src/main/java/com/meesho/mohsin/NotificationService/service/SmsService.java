@@ -5,6 +5,7 @@ import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.repository.SmsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,16 +14,22 @@ import java.util.List;
 @Service
 public class SmsService {
 
+
     @Autowired
     public SmsRepository smsRepository;
+
+    @Autowired
+    public SmsCache smsCache;
 
     public SmsService(){
         System.out.println("SmsService is created !");
     }
 
-
     public List<SmsDto> findAllSmsRequests(){
-        List<SmsRequests> smsRequests = smsRepository.findAll();
+
+        System.out.println("fetching from db");
+
+        List<SmsRequests> smsRequests = smsCache.findAll();
         List<SmsDto> smsDtos = new ArrayList<>();
 
         for(SmsRequests x : smsRequests){

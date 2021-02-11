@@ -1,6 +1,7 @@
 package com.meesho.mohsin.NotificationService;
 
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
+import com.meesho.mohsin.NotificationService.service.SmsCache;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -9,6 +10,8 @@ import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 
 import javax.persistence.EntityManager;
 import java.text.DateFormat;
@@ -19,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SpringBootApplication
+@EnableCaching
 public class NotificationServiceApplication {
 
 	public static void main(String[] args) {
@@ -27,6 +31,7 @@ public class NotificationServiceApplication {
 		System.out.println("Notification Service");
 
 	}
+
 
 }
 
