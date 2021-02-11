@@ -13,4 +13,8 @@ public class ErrorMessageResponse {
         code = "INVALID_REQUEST";
         message = "phone_number is mandatory";
     }
+    public ErrorMessageResponse(String error){
+        code = "INVALID_REQUEST";
+        message = error;
+    }
 }

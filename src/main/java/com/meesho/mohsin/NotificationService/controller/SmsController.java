@@ -1,9 +1,11 @@
 package com.meesho.mohsin.NotificationService.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
+import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
 import com.meesho.mohsin.NotificationService.model.response.ErrorMessageResponse;
 import com.meesho.mohsin.NotificationService.model.response.MessageResponseBody;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/sms")
+@RequestMapping("/v1")
 public class SmsController {
 
     // LOGGER
@@ -32,38 +34,37 @@ public class SmsController {
     @Autowired
     public SmsRepository smsRepository;
 
-    @GetMapping(value = "/get/bulk")
+    @GetMapping(value = "/sms/get/bulk")
     public List<SmsDto> getAllSms(){
-        log.info("getAllSms() called inside SmsController");
         return smsService.findAllSmsRequests();
     }
 
-    @GetMapping(value = "/get/{id}")
-    public SmsDto findSmsById(@PathVariable(value = "id") int id){
-        log.info("findSmsById() called inside SmsController");
+    @GetMapping(value = "/sms/get/{id}")
+    public SmsDto findSmsById(@PathVariable(value = "id") int id) throws JsonProcessingException {
         return smsService.findSmsRequestById(id);
     }
 
-    @PostMapping(value = "/send")
+    @PostMapping(value = "/sms/send")
     public ResponseEntity<MessageResponseBody> send(@RequestBody MessageRequestBody messageRequestBody){
         try{
-            SmsRequests sms = new SmsRequests();
-            sms.setPhone_number(messageRequestBody.getPhone_number());
-            sms.setMessage(messageRequestBody.getMessage());
-            sms.setStatus("OK");
-            smsRepository.save(sms);
-
             //kafkaController.sendToKafka(String.valueOf(sms.getId()));
-            SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
-            successMessageResponse.setRequest_id(String.valueOf(sms.getId()));
-            successMessageResponse.setComments("Successfully Sent");
-
+            SuccessMessageResponse successMessageResponse = smsService.sendMessage(messageRequestBody);
             return new ResponseEntity<>(new MessageResponseBody(successMessageResponse), HttpStatus.OK);
         }
         catch (Exception exception){
-            return new ResponseEntity<>(new MessageResponseBody(new ErrorMessageResponse()), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new MessageResponseBody(new ErrorMessageResponse()), HttpStatus.BAD_REQUEST);
         }
     }
 
+    @PostMapping(value = "/blacklist")
+    public ResponseEntity<MessageResponseBody> addToBlacklist(@RequestBody PhoneNumberRequestBody phoneNumberRequestBody) {
+        try{
+            SuccessMessageResponse successMessageResponse = smsService.addToBlackList(phoneNumberRequestBody);
+            return new ResponseEntity(new MessageResponseBody(successMessageResponse),HttpStatus.OK);
+        }
+        catch (Exception exception){
+            return new ResponseEntity(new MessageResponseBody(new ErrorMessageResponse("coudn't add to blacklist")),HttpStatus.NOT_FOUND);
+        }
+    }
 
 }

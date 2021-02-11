@@ -45,7 +45,6 @@ public class SmsRequests {
     // NO NEED FOR GETTERS AND SETTERS AND CONSTRUCTORS, AS DATA ANNOTATION WILL HANDLE IT.
 
 
-
     //   TO STRING
 
     @Override
