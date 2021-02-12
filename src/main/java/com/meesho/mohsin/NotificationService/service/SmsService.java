@@ -40,6 +40,9 @@ public class SmsService {
     public BlackListedRepository2 blackListedRepository2;
 
     @Autowired
+    public KafkaProducerService kafkaProducerService;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     public SmsService(){
@@ -73,9 +76,11 @@ public class SmsService {
 
         smsCacheRepository.refreshCache(Collections.singletonList(smsRequestSaved.getId()));
 
+        kafkaProducerService.sendMsg(String.valueOf(sms.getId()));
+
         SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
         successMessageResponse.setRequest_id(String.valueOf(sms.getId()));
-        successMessageResponse.setComments("Successfully Sent");
+        successMessageResponse.setComments("Successfully Stored in Mysql");
 
         return successMessageResponse;
     }
@@ -124,7 +129,7 @@ public class SmsService {
 
             addToBlackList(phoneNumbers);
         }
-        
+
         BlackListResponse blackListResponse = new BlackListResponse();
         blackListResponse.setData(blackListResponseFromCache);
         return blackListResponse;

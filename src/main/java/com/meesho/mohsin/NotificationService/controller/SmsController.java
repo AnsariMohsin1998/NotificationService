@@ -11,6 +11,7 @@ import com.meesho.mohsin.NotificationService.model.response.ErrorMessageResponse
 import com.meesho.mohsin.NotificationService.model.response.MessageResponseBody;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
 import com.meesho.mohsin.NotificationService.repository.SmsRepository;
+import com.meesho.mohsin.NotificationService.service.KafkaProducerService;
 import com.meesho.mohsin.NotificationService.service.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,9 @@ public class SmsController {
     @Autowired
     public SmsRepository smsRepository;
 
+    @Autowired
+    public KafkaProducerService kafkaProducerService;
+
     @GetMapping(value = "/sms/get/bulk")
     public List<SmsDto> getAllSms(){
         return smsService.findAllSmsRequests();
@@ -49,7 +53,7 @@ public class SmsController {
     @PostMapping(value = "/sms/send")
     public ResponseEntity<MessageResponseBody> send(@RequestBody MessageRequestBody messageRequestBody){
         try{
-            //kafkaController.sendToKafka(String.valueOf(sms.getId()));
+
             SuccessMessageResponse successMessageResponse = smsService.sendMessage(messageRequestBody);
             return new ResponseEntity<>(new MessageResponseBody(successMessageResponse), HttpStatus.OK);
         }
