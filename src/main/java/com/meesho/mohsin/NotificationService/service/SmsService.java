@@ -2,6 +2,7 @@ package com.meesho.mohsin.NotificationService.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.meesho.mohsin.NotificationService.constants.KafkaConstants;
 import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.BlackListedEntity;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
@@ -76,7 +77,7 @@ public class SmsService {
 
         smsCacheRepository.refreshCache(Collections.singletonList(smsRequestSaved.getId()));
 
-        kafkaProducerService.sendMsg(String.valueOf(sms.getId()));
+        kafkaProducerService.sendMsg(KafkaConstants.SMS_CONSUMER_TOPIC,smsRequestSaved.getId());
 
         SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
         successMessageResponse.setRequest_id(String.valueOf(sms.getId()));
