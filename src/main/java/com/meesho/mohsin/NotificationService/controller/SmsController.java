@@ -3,7 +3,8 @@ package com.meesho.mohsin.NotificationService.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meesho.mohsin.NotificationService.dto.SmsDto;
-import com.meesho.mohsin.NotificationService.model.SmsRequests;
+import com.meesho.mohsin.NotificationService.model.DateInput;
+import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.ElasticSearchBody;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
 import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
 import com.meesho.mohsin.NotificationService.model.response.BlackListResponse;
@@ -11,17 +12,18 @@ import com.meesho.mohsin.NotificationService.model.response.ErrorMessageResponse
 import com.meesho.mohsin.NotificationService.model.response.MessageResponseBody;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
 import com.meesho.mohsin.NotificationService.repository.SmsRepository;
-import com.meesho.mohsin.NotificationService.service.KafkaProducerService;
+import com.meesho.mohsin.NotificationService.producers.KafkaProducerService;
+import com.meesho.mohsin.NotificationService.service.ELasticSearchService;
 import com.meesho.mohsin.NotificationService.service.SmsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/v1")
@@ -39,6 +41,9 @@ public class SmsController {
 
     @Autowired
     public KafkaProducerService kafkaProducerService;
+
+    @Autowired
+    ELasticSearchService eLasticSearchService;
 
     @GetMapping(value = "/sms/get/bulk")
     public List<SmsDto> getAllSms(){
@@ -89,5 +94,17 @@ public class SmsController {
         BlackListResponse blackListResponse = smsService.getBlackList();
 
         return new ResponseEntity(blackListResponse, HttpStatus.OK);
+    }
+
+    @GetMapping ("/searchSmsContainingText/{text}")
+    public List<ElasticSearchBody> getAllSmsConstainingText(@PathVariable String text){
+        log.info("INSIDE getAllSmsConstainingText(SmsController)");
+        return eLasticSearchService.getAllSmsConstainingText(text);
+    }
+
+    @GetMapping("/searchMobileNumbersBetweenDate")
+    public Page<ElasticSearchBody> getAllBetweenDate(@RequestBody DateInput dateInput){
+        log.info("Inside getAllBetweenDate");
+        return eLasticSearchService.getAllSmsBetweenStartAndEndTime(dateInput);
     }
 }

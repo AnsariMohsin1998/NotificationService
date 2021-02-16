@@ -1,33 +1,30 @@
-package com.meesho.mohsin.NotificationService.service;
+package com.meesho.mohsin.NotificationService.consumers;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meesho.mohsin.NotificationService.constants.KafkaConstants;
-import com.meesho.mohsin.NotificationService.controller.SmsController;
 import com.meesho.mohsin.NotificationService.model.BlackListedEntity;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
-import com.meesho.mohsin.NotificationService.model.kafka.ProducerRecord;
+import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.ElasticSearchBody;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository2;
+import com.meesho.mohsin.NotificationService.repository.SearchRepository;
 import com.meesho.mohsin.NotificationService.repository.SmsRepository;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import com.meesho.mohsin.NotificationService.service.ImiConnectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @EnableConfigurationProperties
-public class KafkaConsumerService { // CONTROLLER
+public class KafkaConsumerService {
     @Autowired
     SmsRepository smsRepository;
 
@@ -42,6 +39,9 @@ public class KafkaConsumerService { // CONTROLLER
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    SearchRepository searchRepository;
 
     private static final Logger log = LoggerFactory.getLogger(KafkaConsumerService.class);
 
@@ -65,7 +65,6 @@ public class KafkaConsumerService { // CONTROLLER
         String phone_number = smsRequest.getPhone_number();
 
         log.info("found smsRequest by id");
-
 
         //first check in cache
 
@@ -97,11 +96,21 @@ public class KafkaConsumerService { // CONTROLLER
                 smsRequest.setStatus("sending to 3rd party");
                 smsRepository.save(smsRequest);
 
-                // send to 3rd party api
-                String responseFromImiConnect = imiConnectService.send(smsRequest);
+//                Saving in ES
+//                ElasticSearchBody elasticSearchSavedData = ElasticSearchBody.builder().id(String.valueOf(smsRequest.getId())).message(smsRequest.getMessage()).phone_number(smsRequest.getPhone_number()).created_at(smsRequest.getCreated_at()).build();
+//                elasticsearchOperations.save(elasticSearchSavedData);
 
-                log.info("message send to 3rd party api");
-                log.info("response received from ImiConnect is : "+responseFromImiConnect);
+                // Saving in ES 2
+                ElasticSearchBody elasticSearchBody = ElasticSearchBody.builder().id(String.valueOf(smsRequest.getId())).phone_number(smsRequest.getPhone_number()).message(smsRequest.getMessage()).createdAt(smsRequest.getCreated_at()).build();
+                searchRepository.save(elasticSearchBody);
+
+                log.info("Saved in elastic search");
+
+                // send to 3rd party api
+                //String responseFromImiConnect = imiConnectService.send(smsRequest);
+
+                log.info("message send to 3rd party api , but not used because it is costly");
+                //log.info("response received from ImiConnect is : "+responseFromImiConnect);
 
             }
         }

@@ -7,16 +7,16 @@ import com.meesho.mohsin.NotificationService.dto.SmsDto;
 import com.meesho.mohsin.NotificationService.model.BlackListedEntity;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
-import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
 import com.meesho.mohsin.NotificationService.model.response.BlackListResponse;
 import com.meesho.mohsin.NotificationService.model.response.SuccessMessageResponse;
+import com.meesho.mohsin.NotificationService.producers.KafkaProducerService;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository2;
 import com.meesho.mohsin.NotificationService.repository.SmsRepository;
 import com.meesho.mohsin.NotificationService.repository.cache.SmsCacheRepository;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -44,6 +44,9 @@ public class SmsService {
     public KafkaProducerService kafkaProducerService;
 
     @Autowired
+    RestHighLevelClient restHighLevelClient;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     public SmsService(){
@@ -64,6 +67,9 @@ public class SmsService {
 
             smsDtos.add(smsDto);
         }
+
+        //restHighLevelClient.search();
+
         return smsDtos;
     }
 
@@ -77,7 +83,10 @@ public class SmsService {
 
         smsCacheRepository.refreshCache(Collections.singletonList(smsRequestSaved.getId()));
 
+
+        System.out.println("Before producer");
         kafkaProducerService.sendMsg(KafkaConstants.SMS_CONSUMER_TOPIC,smsRequestSaved.getId());
+        System.out.println("After producer");
 
         SuccessMessageResponse successMessageResponse = new SuccessMessageResponse();
         successMessageResponse.setRequest_id(String.valueOf(sms.getId()));

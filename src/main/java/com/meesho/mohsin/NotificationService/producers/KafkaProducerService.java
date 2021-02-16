@@ -1,4 +1,4 @@
-package com.meesho.mohsin.NotificationService.service;
+package com.meesho.mohsin.NotificationService.producers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
