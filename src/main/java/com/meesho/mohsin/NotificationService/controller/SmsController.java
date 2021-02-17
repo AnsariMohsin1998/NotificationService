@@ -58,7 +58,7 @@ public class SmsController {
     @PostMapping(value = "/sms/send")
     public ResponseEntity<MessageResponseBody> send(@RequestBody MessageRequestBody messageRequestBody){
         try{
-
+            log.info("inside send sms");
             SuccessMessageResponse successMessageResponse = smsService.sendMessage(messageRequestBody);
             return new ResponseEntity<>(new MessageResponseBody(successMessageResponse), HttpStatus.OK);
         }

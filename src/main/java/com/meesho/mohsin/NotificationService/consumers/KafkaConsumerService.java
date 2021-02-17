@@ -107,7 +107,7 @@ public class KafkaConsumerService {
                 log.info("Saved in elastic search");
 
                 // send to 3rd party api
-                //String responseFromImiConnect = imiConnectService.send(smsRequest);
+                String responseFromImiConnect = imiConnectService.send(smsRequest);
 
                 log.info("message send to 3rd party api , but not used because it is costly");
                 //log.info("response received from ImiConnect is : "+responseFromImiConnect);

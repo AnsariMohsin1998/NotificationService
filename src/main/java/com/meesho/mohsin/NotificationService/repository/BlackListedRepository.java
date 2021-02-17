@@ -24,6 +24,7 @@ public class BlackListedRepository {
         return redisTemplate.opsForSet().isMember("data",number);
     }
     public long delete(String number){
+        System.out.println("inside delete inside repo");
         return redisTemplate.opsForSet().remove("data",number);
     }
     public boolean deleteAll(){

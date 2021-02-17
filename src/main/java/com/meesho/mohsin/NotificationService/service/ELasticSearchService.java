@@ -36,7 +36,7 @@ public class ELasticSearchService {
 
     public Page<ElasticSearchBody> getAllSmsBetweenStartAndEndTime(DateInput dateInput) {
 
-        log.info("inside getAllSmsBetweenStartAndEndTime");
+        log.info("Inside getAllSmsBetweenStartAndEndTime");
         long startEpoch = converters.DateConverter(dateInput.getStartDate());
         long endEpoch = converters.DateConverter(dateInput.getEndDate());
 
