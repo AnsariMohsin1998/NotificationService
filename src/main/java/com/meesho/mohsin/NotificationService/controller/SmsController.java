@@ -3,8 +3,8 @@ package com.meesho.mohsin.NotificationService.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.meesho.mohsin.NotificationService.dto.SmsDto;
-import com.meesho.mohsin.NotificationService.model.DateInput;
-import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.ElasticSearchBody;
+import com.meesho.mohsin.NotificationService.model.request.PhoneNumberSearchRequest;
+import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.SmsRequestDocument;
 import com.meesho.mohsin.NotificationService.model.request.MessageRequestBody;
 import com.meesho.mohsin.NotificationService.model.request.PhoneNumberRequestBody;
 import com.meesho.mohsin.NotificationService.model.response.BlackListResponse;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("api/v1/sms")
 public class SmsController {
 
     // LOGGER
@@ -45,20 +45,20 @@ public class SmsController {
     @Autowired
     ELasticSearchService eLasticSearchService;
 
-    @GetMapping(value = "/sms/get/bulk")
+    @GetMapping(value = "/get/bulk")
     public List<SmsDto> getAllSms(){
         return smsService.findAllSmsRequests();
     }
 
-    @GetMapping(value = "/sms/get/{id}")
+    @GetMapping(value = "/get/{id}")
     public SmsDto findSmsById(@PathVariable(value = "id") int id) throws JsonProcessingException {
         return smsService.findSmsRequestById(id);
     }
 
-    @PostMapping(value = "/sms/send")
+    @PostMapping(value = "/send")
     public ResponseEntity<MessageResponseBody> send(@RequestBody MessageRequestBody messageRequestBody){
         try{
-            log.info("inside send sms");
+            log.info("sms_request : {}",messageRequestBody);
             SuccessMessageResponse successMessageResponse = smsService.sendMessage(messageRequestBody);
             return new ResponseEntity<>(new MessageResponseBody(successMessageResponse), HttpStatus.OK);
         }
@@ -89,22 +89,30 @@ public class SmsController {
         }
     }
 
-    @GetMapping(value = "/blacklist")
+    @GetMapping(value = "/blacklist/get")
     public ResponseEntity<BlackListResponse> getBlacklist(){
+        log.info("inside getBlackList()");
         BlackListResponse blackListResponse = smsService.getBlackList();
 
         return new ResponseEntity(blackListResponse, HttpStatus.OK);
     }
 
-    @GetMapping ("/searchSmsContainingText/{text}")
-    public List<ElasticSearchBody> getAllSmsConstainingText(@PathVariable String text){
+    // Pagination (TODO)
+    @GetMapping ("/search/{text}")
+    public ResponseEntity getAllSmsConstainingText(@PathVariable String text){
         log.info("INSIDE getAllSmsConstainingText(SmsController)");
-        return eLasticSearchService.getAllSmsConstainingText(text);
+        return new ResponseEntity(eLasticSearchService.getAllSmsConstainingText(text),HttpStatus.OK);
     }
 
-    @GetMapping("/searchMobileNumbersBetweenDate")
-    public Page<ElasticSearchBody> getAllBetweenDate(@RequestBody DateInput dateInput){
-        log.info("Inside getAllBetweenDate");
-        return eLasticSearchService.getAllSmsBetweenStartAndEndTime(dateInput);
+    // Pagination
+    @GetMapping("/phone_number/search")
+    public ResponseEntity getAllBetweenDate(@RequestBody PhoneNumberSearchRequest phoneNumberSearchRequest){
+        log.info("phoneNumberSearchRequest : {}", phoneNumberSearchRequest);
+        return new ResponseEntity(eLasticSearchService.searchPhoneNumbers(phoneNumberSearchRequest),HttpStatus.OK);
+    }
+
+    @GetMapping("/searchall")
+    public ResponseEntity getAll(){
+        return new ResponseEntity((eLasticSearchService.getAll()),HttpStatus.OK);
     }
 }

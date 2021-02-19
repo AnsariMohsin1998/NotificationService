@@ -80,16 +80,16 @@ public class SmsService {
 
     public SuccessMessageResponse sendMessage(MessageRequestBody messageRequestBody) throws JsonProcessingException {
 
-        log.info("inside sendMessage !");
+        log.debug("inside sendMessage !");
         SmsRequests sms = new SmsRequests();
         sms.setPhone_number(messageRequestBody.getPhone_number());
         sms.setMessage(messageRequestBody.getMessage());
         sms.setStatus("OK");
-        log.info("before smsRepo");
-        SmsRequests smsRequestSaved = smsRepository.save(sms);
-        log.info("after smsRepo");
+        log.debug("before smsRepo");
+        SmsRequests smsRequestSaved = smsRepository.saveAndFlush(sms);
+        log.debug("after smsRepo");
         smsCacheRepository.refreshCache(Collections.singletonList(smsRequestSaved.getId()));
-        log.info("after refreshCache");
+        log.debug("after refreshCache");
 
         System.out.println("Before producer");
         kafkaProducerService.sendMsg(KafkaConstants.SMS_CONSUMER_TOPIC,smsRequestSaved.getId());
@@ -138,10 +138,13 @@ public class SmsService {
 
     public BlackListResponse getBlackList(){
 
+        log.info("inside getBlackList() SmsService");
         Set<String> blackListResponseFromCache = blackListedRepository.findAll();
 
-        if(blackListResponseFromCache == null){
+        if(blackListResponseFromCache.size() == 0){
             //fetch from database and put in cache
+            log.info("cache is empty so fetching from db and inserting into cache");
+
             List<BlackListedEntity> blackListedEntities = blackListedRepository2.findAll();
             List<String> phoneNumbers = new ArrayList<>();
             for(BlackListedEntity blackListedEntity : blackListedEntities)

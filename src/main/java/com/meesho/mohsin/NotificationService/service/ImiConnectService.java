@@ -25,6 +25,7 @@ public class ImiConnectService {
             return response;
         }
         catch (Exception E){
+            System.out.println("inside exception ImiConnectService");
             return String.valueOf(E);
         }
     }

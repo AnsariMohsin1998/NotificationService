@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.meesho.mohsin.NotificationService.constants.KafkaConstants;
 import com.meesho.mohsin.NotificationService.model.BlackListedEntity;
 import com.meesho.mohsin.NotificationService.model.SmsRequests;
-import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.ElasticSearchBody;
+import com.meesho.mohsin.NotificationService.model.elasticsearchmodel.SmsRequestDocument;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository;
 import com.meesho.mohsin.NotificationService.repository.BlackListedRepository2;
 import com.meesho.mohsin.NotificationService.repository.SearchRepository;
@@ -101,16 +101,17 @@ public class KafkaConsumerService {
 //                elasticsearchOperations.save(elasticSearchSavedData);
 
                 // Saving in ES 2
-                ElasticSearchBody elasticSearchBody = ElasticSearchBody.builder().id(String.valueOf(smsRequest.getId())).phone_number(smsRequest.getPhone_number()).message(smsRequest.getMessage()).createdAt(smsRequest.getCreated_at()).build();
-                searchRepository.save(elasticSearchBody);
+                SmsRequestDocument smsRequestDocument = SmsRequestDocument.builder().id(String.valueOf(smsRequest.getId())).phoneNumber(smsRequest.getPhone_number()).message(smsRequest.getMessage()).createdAt(smsRequest.getCreated_at()).build();
+                searchRepository.save(smsRequestDocument);
 
                 log.info("Saved in elastic search");
 
                 // send to 3rd party api
-                String responseFromImiConnect = imiConnectService.send(smsRequest);
-
-                log.info("message send to 3rd party api , but not used because it is costly");
-                //log.info("response received from ImiConnect is : "+responseFromImiConnect);
+//                String responseFromImiConnect = imiConnectService.send(smsRequest);
+//
+//                log.info("message send to 3rd party api , but not used because it is costly");
+//                log.info("response received from ImiConnect is : "+responseFromImiConnect);
+//                log.info("smsRequest : {}",smsRequest);
 
             }
         }
