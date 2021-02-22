@@ -9,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class ImiConnectConfig {
+public class ImiConnectConfiguration {
 
     @Value("${imiconnect.url}")
     private String uri;

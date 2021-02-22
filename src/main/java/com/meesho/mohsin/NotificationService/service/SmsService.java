@@ -147,9 +147,10 @@ public class SmsService {
 
             List<BlackListedEntity> blackListedEntities = blackListedRepository2.findAll();
             List<String> phoneNumbers = new ArrayList<>();
-            for(BlackListedEntity blackListedEntity : blackListedEntities)
+            for(BlackListedEntity blackListedEntity : blackListedEntities) {
                 phoneNumbers.add(blackListedEntity.getPhone_number());
-
+                blackListResponseFromCache.add(blackListedEntity.getPhone_number());
+            }
             addToBlackList(phoneNumbers);
         }
 

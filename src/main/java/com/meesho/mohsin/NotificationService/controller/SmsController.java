@@ -97,14 +97,12 @@ public class SmsController {
         return new ResponseEntity(blackListResponse, HttpStatus.OK);
     }
 
-    // Pagination (TODO)
     @GetMapping ("/search/{text}")
     public ResponseEntity getAllSmsConstainingText(@PathVariable String text){
         log.info("INSIDE getAllSmsConstainingText(SmsController)");
         return new ResponseEntity(eLasticSearchService.getAllSmsConstainingText(text),HttpStatus.OK);
     }
 
-    // Pagination
     @GetMapping("/phone_number/search")
     public ResponseEntity getAllBetweenDate(@RequestBody PhoneNumberSearchRequest phoneNumberSearchRequest){
         log.info("phoneNumberSearchRequest : {}", phoneNumberSearchRequest);
